@@ -469,11 +469,11 @@ bs.Pane = {
 				※其他人的意見僅作參考，請為了良好的遊戲環境努力審核，獨立思考，集思廣益
 			</div>
 			<div class="buttons">
-				<input class="T_hashtag" value="#${bs.hashID}" size="13" onClick="this.select();" readonly />
+				<input class="T_hashtag" value="#${bs.hashID}" size="17" onClick="this.select();" readonly />
 				<a class="link" onclick="bs.editPasscodeInlocalStorage()">passcode</a>
-				<a class="link" target="_blank" href="https://brainstorming.azurewebsites.net/watermeter.html#${bs.hashID}">查</a> 
-				<a class="link" target="_blank" href="https://brainstorming.azurewebsites.net/bs.html">牆</a> 
-				<a class="link" target="_blank" href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSrXYajaKHfO0aDANr-aFu61DEzB0wy5X87uQUBKFza__1J7ttnqJh_84Gvp9-tETIzjbiK_yPx7Llk/pubhtml?gid=621294114&single=true">統</a>
+				<a class="link" target="_blank" href="https://brainstorming.azurewebsites.net/watermeter.html#${bs.hashID}"><span class="short">查</span><span class="long">水表</span></a> 
+				<a class="link" target="_blank" href="https://brainstorming.azurewebsites.net/bs.html"><span class="short">牆</span><span class="long">wall</span></a> 
+				<a class="link" target="_blank" href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSrXYajaKHfO0aDANr-aFu61DEzB0wy5X87uQUBKFza__1J7ttnqJh_84Gvp9-tETIzjbiK_yPx7Llk/pubhtml?gid=621294114&single=true"><span class="short">統</span><span class="long">使用統計</span></a>
 			</div>
 			<div class="otherReviews otherReviews_firebase"> ⌛ Loading...</div> 
 			<div class="otherReviews otherReviews_sheet"> ⌛ Loading...</div> 
@@ -526,6 +526,15 @@ bs.Pane = {
 
 			#brainStorming .T_hashtag{
 				background-color:#194848; color:#71AAAA; border: 1px solid #71AAAA; text-align:center; height: 27px;
+			}
+
+			#brainStorming .link { color: #77FFFF; border: 1px solid #105050; display: inline-block; padding: 0px 4px; margin-left: 3px; height: 26px; } 
+			#brainStorming .link:hover { color: #DD2CFF; text-decoration: underline; } 
+
+			#brainStorming .link .long { display:none; }
+			@media (min-width: 700px) {
+				#brainStorming .link .long { display:inline; }
+				#brainStorming .link .short { display:none; }
 			}
 
 			.otherReviews{
@@ -585,9 +594,7 @@ bs.Pane = {
 			
 			.div_notification_icons>.item {
 				padding-bottom:4px; margin-bottom:6px; line-height:0.92em; background-color:#012020;
-			} 
-			#brainStorming .link { color: #77FFFF; border: 1px solid #105050; display: inline-block; padding: 0px 4px; margin-left: 3px; height: 26px; } 
-			#brainStorming .link:hover { color: #DD2CFF; text-decoration: underline; } 
+			}
 		</style>
 	`,
 };

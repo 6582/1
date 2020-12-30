@@ -3,17 +3,17 @@
 // @namespace   asldufhiu32hr9283hf83123
 // @author       lokpro
 // @include     https://wayfarer.nianticlabs.com/review*
-// @require     https://code.jquery.com/jquery-3.5.1.min.js
+// @require     https://cdn.jsdelivr.net/gh/jquery/jquery@3.5.1/dist/jquery.min.js
 // @updateURL    http://brainstorming.azurewebsites.net/OPR_brainStorming/OPR_brainStroming_update.user.js
 // @downloadURL  http://brainstorming.azurewebsites.net/OPR_brainStorming/OPR_brainStroming.user.js
-// @version     3.996
+// @version     3.997
 // @run-at document-idle
 // @grant       none
 // ==/UserScript==
 
 /*
 致 愛好審po的各位：
-使用本script審po時，會把打分和comments自動傳送到server公開，其他使用者審到同樣的po時，會看得到別人打過的分數和comment。 
+使用本script審po時，會把打分和comments自動傳送到server公開，其他使用者審到同樣的po時，會看得到別人打過的分數和comment。
 目的是互相提醒、交流和學習，同時獨立思考，讓po審核更加盡善盡美。
 你可以把需要注意的地方寫在 comment 中。
 
@@ -22,8 +22,9 @@ v4.0 xx/12/2020
 - 等待記錄完成才繼續，以防止記錄不成功
 - Edit 中的 report abuse 可被記錄
 - 打 1 或 dup 也可同時記錄位置修訂
-- passcode 改了在 UI 上設定，儲存在 localStorage
+- passcode 改了在 UI 上設定，儲存在 localStorage (為方便bookmarklet)
 	dev:
+- 改用 jsdelivr 來載入 jQuery; 除了 @require, 需要時自動動態載入 (為方便bookmarklet)
 - 重寫了結構，方便開發 mod 而不用對本 script 作改動
 - 改了 html 的各種 class
 
@@ -73,7 +74,7 @@ v0.5 30/7/2017
 "function"!=typeof JSON.decycle&&(JSON.decycle=function(n,e){"use strict";var t=new WeakMap;return function n(c,o){var i,r;return void 0!==e&&(c=e(c)),"object"!=typeof c||null===c||c instanceof Boolean||c instanceof Date||c instanceof Number||c instanceof RegExp||c instanceof String?c:void 0!==(i=t.get(c))?{$ref:i}:(t.set(c,o),Array.isArray(c)?(r=[],c.forEach(function(e,t){r[t]=n(e,o+"["+t+"]")})):(r={},Object.keys(c).forEach(function(e){r[e]=n(c[e],o+"["+JSON.stringify(e)+"]")})),r)}(n,"$")});
 
 window.bs = {
-	_VERSION: "3.996",//"4.0",
+	_VERSION: "3.997",//"4.0",
 	iOS: false,
 
 	isQueryFromFirebase: true,
@@ -553,7 +554,7 @@ bs.Pane = {
 			}
 
 			.otherReviews>table td.reasons .date {
-				color: #626262;
+				color: #B0B0B0;
 				font-size: 65%;
 			}
 			.otherReviews>table td{
@@ -649,4 +650,12 @@ bs.PostingLoader = {
 	`,
 };
 
-bs.init();
+if(!window.jQuery){
+	var script = document.createElement("script");
+	script.src = "https://cdn.jsdelivr.net/gh/jquery/jquery@3.5.1/dist/jquery.min.js";
+	script.onload = ()=>bs.init();
+	
+	document.head.appendChild(script);
+}else{
+	bs.init();
+}

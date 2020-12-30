@@ -469,7 +469,7 @@ bs.Pane = {
 				※其他人的意見僅作參考，請為了良好的遊戲環境努力審核，獨立思考，集思廣益
 			</div>
 			<div class="buttons">
-				<input class="T_hashtag" value="#${bs.hashID}" size="17" onClick="this.select();" readonly />
+				<input class="T_hashtag" value="#${bs.hashID}" size="15" onClick="this.select();" readonly />
 				<a class="link" onclick="bs.editPasscodeInlocalStorage()">passcode</a>
 				<a class="link" target="_blank" href="https://brainstorming.azurewebsites.net/watermeter.html#${bs.hashID}"><span class="short">查</span><span class="long">水表</span></a> 
 				<a class="link" target="_blank" href="https://brainstorming.azurewebsites.net/bs.html"><span class="short">牆</span><span class="long">wall</span></a> 

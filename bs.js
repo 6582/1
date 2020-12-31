@@ -310,7 +310,7 @@ bs.postPortal = function(){
 		photoData,
 		passcode: this.passcode,
 		version: +this._VERSION,
-		iOS: this.isIOS,
+		iOS: this.iOS,
 	};
 
 	try{

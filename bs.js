@@ -6,7 +6,7 @@
 // @require     https://cdn.jsdelivr.net/gh/jquery/jquery@3.5.1/dist/jquery.min.js
 // @updateURL    http://brainstorming.azurewebsites.net/OPR_brainStorming/OPR_brainStroming_update.user.js
 // @downloadURL  http://brainstorming.azurewebsites.net/OPR_brainStorming/OPR_brainStroming.user.js
-// @version     3.997
+// @version     3.998
 // @run-at document-idle
 // @grant       none
 // ==/UserScript==
@@ -74,7 +74,7 @@ v0.5 30/7/2017
 "function"!=typeof JSON.decycle&&(JSON.decycle=function(n,e){"use strict";var t=new WeakMap;return function n(c,o){var i,r;return void 0!==e&&(c=e(c)),"object"!=typeof c||null===c||c instanceof Boolean||c instanceof Date||c instanceof Number||c instanceof RegExp||c instanceof String?c:void 0!==(i=t.get(c))?{$ref:i}:(t.set(c,o),Array.isArray(c)?(r=[],c.forEach(function(e,t){r[t]=n(e,o+"["+t+"]")})):(r={},Object.keys(c).forEach(function(e){r[e]=n(c[e],o+"["+JSON.stringify(e)+"]")})),r)}(n,"$")});
 
 window.bs = {
-	_VERSION: "3.997",//"4.0",
+	_VERSION: "3.998",//"4.0",
 	iOS: false,
 
 	isQueryFromFirebase: true,

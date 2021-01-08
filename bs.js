@@ -1,4 +1,4 @@
-﻿// ==UserScript==
+// ==UserScript==
 // @name        OPR_brainStorming
 // @namespace   asldufhiu32hr9283hf83123
 // @author       lokpro
@@ -6,7 +6,7 @@
 // @require     https://cdn.jsdelivr.net/gh/jquery/jquery@3.5.1/dist/jquery.min.js
 // @updateURL    http://brainstorming.azurewebsites.net/OPR_brainStorming/OPR_brainStroming_update.user.js
 // @downloadURL  http://brainstorming.azurewebsites.net/OPR_brainStorming/OPR_brainStroming.user.js
-// @version     3.998
+// @version     4.0
 // @run-at document-idle
 // @grant       none
 // ==/UserScript==
@@ -17,7 +17,7 @@
 目的是互相提醒、交流和學習，同時獨立思考，讓po審核更加盡善盡美。
 你可以把需要注意的地方寫在 comment 中。
 
-v4.0 xx/12/2020
+v4.0 x/1/2021
 - 因為網站更新修正
 - 等待記錄完成才繼續，以防止記錄不成功
 - Edit 中的 report abuse 可被記錄
@@ -74,7 +74,7 @@ v0.5 30/7/2017
 "function"!=typeof JSON.decycle&&(JSON.decycle=function(n,e){"use strict";var t=new WeakMap;return function n(c,o){var i,r;return void 0!==e&&(c=e(c)),"object"!=typeof c||null===c||c instanceof Boolean||c instanceof Date||c instanceof Number||c instanceof RegExp||c instanceof String?c:void 0!==(i=t.get(c))?{$ref:i}:(t.set(c,o),Array.isArray(c)?(r=[],c.forEach(function(e,t){r[t]=n(e,o+"["+t+"]")})):(r={},Object.keys(c).forEach(function(e){r[e]=n(c[e],o+"["+JSON.stringify(e)+"]")})),r)}(n,"$")});
 
 window.bs = {
-	_VERSION: "3.998",//"4.0",
+	_VERSION: "4.0",
 	iOS: false,
 
 	isQueryFromFirebase: true,
@@ -140,7 +140,7 @@ window.bs = {
 		}
 		
 		let notification_icons = "";
-		let html_review = `<table>
+		let html_review = /*html*/`<table>
 			<tr class='head'>
 				<th class='stars'>stars</th>
 				<th class='author'>reviewer</th>
@@ -153,7 +153,7 @@ window.bs = {
 			let hasNewlocation = /\[📍.+m\]/.test( r.reasons );
 			let hasComment = !( /^(\[(📍.+m|dup:.+)\]\s*)+$|^\s*$/.test( r.reasons ) );
 
-			html_review += `
+			html_review += /*html*/`
 				<tr
 						class='${hasComment?"hasComment":""} ${hasNewlocation?"hasNewlocation":""}'
 						title='${(i+1)}) ${new Date(r.timestamp).toLocaleString()}'>
@@ -163,12 +163,12 @@ window.bs = {
 				</tr>`;
 
 			// notification
-			notification_icons +=
-				`<p class='item ${hasComment?"hasComment":""} ${hasNewlocation?"hasNewlocation":""}'>`
-				+r.stars
-				+(hasComment ? "✍" : "")
-				+(hasNewlocation ? "📍" : "")
-				+"</p>";
+			notification_icons += /*html*/`
+				<p class='item ${hasComment?"hasComment":""} ${hasNewlocation?"hasNewlocation":""}'>
+				${r.stars}
+				${hasComment ? "✍" : ""}
+				${hasNewlocation ? "📍" : ""}
+				</p>`;
 		}
 		
 		html_review += "</table>";
@@ -223,12 +223,12 @@ window.bs = {
 				}
 			}
 			
-			notification_icons +=
-				`<p class='item ${hasComment?"hasComment":""} ${hasNewlocation?"hasNewlocation":""}'>`
-				+star
-				+(hasComment ? "✍" : "")
-				+(hasNewlocation ? "📍" : "")
-				+"</p>";
+			notification_icons += /*html*/`
+				<p class='item ${hasComment?"hasComment":""} ${hasNewlocation?"hasNewlocation":""}'>
+				${star}
+				${hasComment ? "✍" : ""}
+				${hasNewlocation ? "📍" : ""}
+				</p>`;
 			
 			html += "</tr>";
 		}
@@ -462,7 +462,7 @@ bs.Pane = {
 	init( bs ){
 		this.bs = bs;
 
-		bs.$pane =  $(`
+		bs.$pane =  $(/*html*/`
 		<div id="brainStorming">
 			<div class="briefing">
 				<span class="versionNo">v${bs._VERSION}</span>
@@ -487,7 +487,7 @@ bs.Pane = {
 
 		$(document.body).append(this.css, bs.$pane );
 	},
-	css:`
+	css:/*html*/`
 		<style>
 			#brainStorming{
 				--W_PANE: 500px;
@@ -610,13 +610,13 @@ bs.PostingLoader = {
 	hide(){
 		$(".bsPostingLoader").remove();
 	},
-	html:`
+	html:/*html*/`
 		<div class="bsPostingLoader">
 			<img class="loader rotating" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAOUlEQVQYlWNgQAX/0TBW8P//QXYUjE0xhiJsijEkkGlkxThNo1BhuBKyIB53hiuhYrw+J0IRwQAHAArxntwkepFwAAAAAElFTkSuQmCC">
 			<div class"text">posting to Brainstorming...</div>
 		</div>
 	`,
-	css:`
+	css:/*html*/`
 		<style>
 			.bsPostingLoader {
 				position: absolute;

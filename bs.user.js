@@ -5,7 +5,7 @@
 // @require     https://cdn.jsdelivr.net/gh/jquery/jquery@3.6.0/dist/jquery.min.js
 // @updateURL    https://github.com/6582/1/raw/main/bs.meta.js
 // @downloadURL  https://github.com/6582/1/raw/main/bs.user.js
-// @version     5.0
+// @version     5.1
 // @run-at document-start
 // @grant       none
 // ==/UserScript==
@@ -16,7 +16,7 @@
 目的是互相提醒、交流和學習，同時獨立思考，讓po審核更加盡善盡美。
 你可以把需要注意的地方寫在 comment 中。
 
-v5.0 23/8/2021
+v5.1 23/8/2021
 - 因為網站又更新修正
 
 v4.0 x/01/2021
@@ -271,6 +271,8 @@ window.bs = {
 };
 
 bs.postPortal = function( d ){
+	if( !this.passcode ) return;
+
 	let reviewData = JSON.parse( d );
 	// console.log( reviewData );
 
@@ -408,7 +410,11 @@ bs.injectBsFunctions = function(){
 				let xhr = this;
 				let send2 = this.send;
 				this.send = async function(d){
-					await bs.postPortal(d);
+					try{
+						await bs.postPortal(d);
+					}catch(error){
+						console.log(error);
+					}
 					return send2.apply(this, arguments);
 				};
 			}

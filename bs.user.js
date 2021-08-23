@@ -5,7 +5,7 @@
 // @require     https://cdn.jsdelivr.net/gh/jquery/jquery@3.6.0/dist/jquery.min.js
 // @updateURL    https://github.com/6582/1/raw/main/bs.meta.js
 // @downloadURL  https://github.com/6582/1/raw/main/bs.user.js
-// @version     5.1
+// @version     5.2
 // @run-at document-start
 // @grant       none
 // ==/UserScript==
@@ -16,7 +16,7 @@
 目的是互相提醒、交流和學習，同時獨立思考，讓po審核更加盡善盡美。
 你可以把需要注意的地方寫在 comment 中。
 
-v5.1 23/8/2021
+v5 23/8/2021
 - 因為網站又更新修正
 
 v4.0 x/01/2021
@@ -72,7 +72,7 @@ v0.5 30/7/2017
 */
 
 window.bs = {
-	_VERSION: "5.0",
+	_VERSION: "5.2",
 	iOS: false,
 
 	isQueryFromFirebase: true,
@@ -369,7 +369,9 @@ bs.initPasscode = function(){
 
 	if( !this.passcode ){
 		this.Pane.$el.find(".otherReviews").html( "<br><br>必須輸入 passcode 才能運作。<br>請申請一個 passcode 並在上方設定<br>設定後須要重新載入頁面。" );
-		this.Pane.$div_notification_icons.empty();
+		this.Pane.$div_notification_icons.html(
+			`<p class="item">⚠️</p>`
+		);
 	}
 };
 
@@ -414,6 +416,7 @@ bs.injectBsFunctions = function(){
 						await bs.postPortal(d);
 					}catch(error){
 						console.log(error);
+						alert( `上傳失敗 - ${error.message}\n${err.stack}` );
 					}
 					return send2.apply(this, arguments);
 				};
@@ -462,6 +465,15 @@ bs.init = function(){
 			this.Pane.init( this );
 			this.PostingLoader.init();
 			this.initPasscode();
+
+			if( this.passcode && !this.pageData ){
+				this.Pane.$el.find(".otherReviews").append( /*html*/
+					`<br><br><hr><br>未取得本頁的審po內容，請在審po官方menu轉到其他頁再轉回來「★REVIEW」 (不是 reload page)`
+				);
+				this.Pane.$div_notification_icons.html(
+					`<p class="item">⚠️</p>`
+				);
+			}
 		} );
 };
 
@@ -499,7 +511,7 @@ bs.Pane = {
 					<input class="T_hashtag" size="15" onClick="this.select();" readonly />
 					<a class="link" onclick="bs.editPasscode()">passcode</a>
 					<a class="link link_watermeter" target="_blank" href="https://brainstorming.azurewebsites.net/watermeter.html"><span class="short">查</span><span class="long">水表</span></a> 
-					<a class="link" target="_blank" href="https://brainstorming.azurewebsites.net/bs.html"><span class="short">牆</span><span class="long">wall</span></a> 
+					<a class="link" target="_blank" href="https://brainstorming.azurewebsites.net/bs.html"><span class="short">牆</span><span class="long">wall</span></a>
 					<a class="link" target="_blank" href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSrXYajaKHfO0aDANr-aFu61DEzB0wy5X87uQUBKFza__1J7ttnqJh_84Gvp9-tETIzjbiK_yPx7Llk/pubhtml?gid=621294114&single=true"><span class="short">統</span><span class="long">使用統計</span></a>
 				</div>
 			</div>

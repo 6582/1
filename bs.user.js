@@ -1,13 +1,12 @@
 // ==UserScript==
 // @name        OPR_brainStorming
 // @namespace   asldufhiu32hr9283hf83123
-// @author       lokpro
-// @include     https://wayfarer.nianticlabs.com/review*
-// @require     https://cdn.jsdelivr.net/gh/jquery/jquery@3.5.1/dist/jquery.min.js
-// @updateURL    http://brainstorming.azurewebsites.net/OPR_brainStorming/OPR_brainStroming_update.user.js
-// @downloadURL  http://brainstorming.azurewebsites.net/OPR_brainStorming/OPR_brainStroming.user.js
-// @version     4.0
-// @run-at document-idle
+// @include     https://wayfarer.nianticlabs.com/*
+// @require     https://cdn.jsdelivr.net/gh/jquery/jquery@3.6.0/dist/jquery.min.js
+// @updateURL    https://github.com/6582/1/raw/main/bs.meta.js
+// @downloadURL  https://github.com/6582/1/raw/main/bs.user.js
+// @version     5.0
+// @run-at document-start
 // @grant       none
 // ==/UserScript==
 
@@ -17,7 +16,10 @@
 目的是互相提醒、交流和學習，同時獨立思考，讓po審核更加盡善盡美。
 你可以把需要注意的地方寫在 comment 中。
 
-v4.0 x/1/2021
+v5.0 23/8/2021
+- 因為網站又更新修正
+
+v4.0 x/01/2021
 - 因為網站更新修正
 - 等待記錄完成才繼續，以防止記錄不成功
 - Edit 中的 report abuse 可被記錄
@@ -69,12 +71,8 @@ v0.6 31/7/2017
 v0.5 30/7/2017
 */
 
-
-// JSON.decycle() - https://github.com/douglascrockford/JSON-js/blob/master/cycle.js
-"function"!=typeof JSON.decycle&&(JSON.decycle=function(n,e){"use strict";var t=new WeakMap;return function n(c,o){var i,r;return void 0!==e&&(c=e(c)),"object"!=typeof c||null===c||c instanceof Boolean||c instanceof Date||c instanceof Number||c instanceof RegExp||c instanceof String?c:void 0!==(i=t.get(c))?{$ref:i}:(t.set(c,o),Array.isArray(c)?(r=[],c.forEach(function(e,t){r[t]=n(e,o+"["+t+"]")})):(r={},Object.keys(c).forEach(function(e){r[e]=n(c[e],o+"["+JSON.stringify(e)+"]")})),r)}(n,"$")});
-
 window.bs = {
-	_VERSION: "4.0",
+	_VERSION: "5.0",
 	iOS: false,
 
 	isQueryFromFirebase: true,
@@ -134,8 +132,8 @@ window.bs = {
 		let p = this.parseJsonToPortal( this.firebaseJsonObj );
 
 		if( p==null ){
-			this.$otherReviews_firebase.html( "(未有資料 / no data)<br>" );
-			this.$div_notification_icons.empty();
+			this.Pane.$otherReviews_firebase.html( "(未有資料 / no data)<br>" );
+			this.Pane.$div_notification_icons.empty();
 			return;
 		}
 		
@@ -172,16 +170,17 @@ window.bs = {
 		}
 		
 		html_review += "</table>";
-		this.$otherReviews_firebase.html( html_review );
-		this.$div_notification_icons.html(notification_icons);
+		this.Pane.$otherReviews_firebase.html( html_review );
+		this.Pane.$div_notification_icons.html(notification_icons);
 	},
 
 	showReviewsSheet(){
 		let json = this.sheetJsonObj;
 
 		if( json.table.rows.length == 0 ){
-			this.$otherReviews_sheet.html( "(未有資料 / no data)<br>" );
-			if( !this.isQueryFromFirebase ) this.$div_notification_icons.empty();
+			this.Pane.$otherReviews_sheet
+				.html( "(未有資料 / no data)<br>" );
+			if( !this.isQueryFromFirebase ) this.Pane.$div_notification_icons.empty();
 			return;
 		}
 		
@@ -235,8 +234,8 @@ window.bs = {
 		
 		html += "</table>";
 	
-		this.$otherReviews_sheet.html( html );
-		if( !this.isQueryFromFirebase ) this.$div_notification_icons.html(notification_icons);
+		this.Pane.$otherReviews_sheet.html( html );
+		if( !this.isQueryFromFirebase ) this.Pane.$div_notification_icons.html(notification_icons);
 	},
 	
 	queryReviewsFromFirebase(){
@@ -271,24 +270,18 @@ window.bs = {
 	},
 };
 
-bs.postPortal = function(){
-	if( this.postedOnceAlready ){
-		return;
-	}else{
-		this.postedOnceAlready = true;
-	}
-	
-	let reviewData = this.ReviewResponsesService.getReviewSubmissionFormData();
-	let editData = this.ReviewResponsesService.getEditSubmissionFormData();
-	let photoData = this.ReviewResponsesService.getPhotoSubmissionFormData();
-	
-	try{
-		let locationMarker = this.ReviewResponsesService.getNewLocationMarker();
-		if( null != locationMarker ){
-			let p = locationMarker.getPosition();
-			reviewData.newLocation = `${p.lat()}, ${p.lng()}`;
-		}
-	}catch(error){}
+bs.postPortal = function( d ){
+	let reviewData = JSON.parse( d );
+	// console.log( reviewData );
+
+	// TODO: 就算 1星 也可傳送移位點
+	// try{
+	// 	let locationMarker = this.ReviewResponsesService.getNewLocationMarker();
+	// 	if( null != locationMarker ){
+	// 		let p = locationMarker.getPosition();
+	// 		reviewData.newLocation = `${p.lat()}, ${p.lng()}`;
+	// 	}
+	// }catch(error){}
 	
 	// dup
 	if( reviewData.duplicate ){
@@ -298,41 +291,40 @@ bs.postPortal = function(){
 					.title;
 	}
 	
-	// deep copy pageData, for removing unnecessary data.
-	let pageData2 = JSON.parse( JSON.stringify( JSON.decycle(this.pageData) ) );
-	delete pageData2.nearbyPortals;
-	delete pageData2.prediction;
+	// removes unnecessary data.
+	delete this.pageData.nearbyPortals;
+	delete this.pageData.prediction;
 	
-	let postData = this.postData = {
-		pageData: pageData2,
+	let postData = {
+		pageData: this.pageData,
 		reviewData,
-		editData,
-		photoData,
 		passcode: this.passcode,
 		version: +this._VERSION,
 		iOS: this.iOS,
+		comment: $("mat-form-field textarea").val(),
 	};
-
-	try{
-		postData.comment = $(".comments-input").val();
-	}catch(error){}
 
 	this.PostingLoader.show();
 
+	// console.log( postData );
+
 	return $.post(
 		"https://script.google.com/macros/s/AKfycbx40e7IMYSRdBil1gDp2TrqE4loejar8oAnQaCXwn4SrG03ZPcz/exec",
-		JSON.stringify( JSON.decycle(postData) )
+		JSON.stringify( postData )
 	).done( result=>{
 		try{
 			let msg = JSON.parse(result).msg;
 			if( msg != "ok" ) alert( msg );
 		}catch(error){};
 	} )
-	.always( ()=>{
+	.always( ()=>{ // finally is not supported by some browsers.
 		this.PostingLoader.hide();
 	} );
 };
 
+/**
+ * 為了方便 extend 或建立 mod
+ */
 bs.loadOverrides = function(){
 	Object.assign( this, window.bsOverrides ); // assign all var and functions from bsOverrides to bs
 	
@@ -364,26 +356,6 @@ bs.fix_iOS_hover = function(){
 	document.body.setAttribute('tabIndex',"0");
 };
 
-bs.waitForPageData = function(){
-  return new Promise( resolve => {
-		let interval = setInterval( ()=>{
-			try{	
-				this.reviewCtrl = angular.element(document.getElementById('ReviewController')).scope().reviewCtrl;
-				this.pageData = this.reviewCtrl.pageData;
-				this.ReviewResponsesService = angular.element(document.getElementById("ReviewController")).injector().get("ReviewResponsesService");
-
-				this.hashID = this.imgUrlToHashId( this.pageData.imageUrl );
-			}catch( error ){
-				return;
-			}
-
-			// data ready
-			clearInterval( interval );
-			resolve();
-		}, 127);
-	} )
-};
-
 bs.initPasscode = function(){
 	// 優先次序: 1.bsOverrides 2.localStorage
 	this.passcode = this.passcode || localStorage.BSpasscode || "";
@@ -392,100 +364,165 @@ bs.initPasscode = function(){
 		// 如果user連前面的 `var passcode = "` 也輸入了，取出 str 部份
 		this.passcode = this.passcode.match( /"(.*)"/ )[1];
 	} catch (error) {}
+
+	if( !this.passcode ){
+		this.Pane.$el.find(".otherReviews").html( "<br><br>必須輸入 passcode 才能運作。<br>請申請一個 passcode 並在上方設定<br>設定後須要重新載入頁面。" );
+		this.Pane.$div_notification_icons.empty();
+	}
 };
 
-bs.editPasscodeInlocalStorage = function(){
+bs.editPasscode = function(){
 	let str = prompt(
-		`passcode:
+		`[passcode]:
 
-可輸入 var passcode="xxx"; 或 xxx
-
-設定後須要重新載入頁面`,
+可輸入
+var passcode="passcode_xxx";
+或 
+passcode_xxx`,
 		localStorage.BSpasscode || ""
 	);
 
 	if( str!==null ){
 		localStorage.BSpasscode = str.trim();
 		this.initPasscode();
+
+		if( confirm("passcode修改後，需要重新載入，選'OK'重新載入。") ){
+			location.reload();
+		}
 	}
 };
 
 bs.injectBsFunctions = function(){
-	let reviewCtrl = this.reviewCtrl;
 	let bs = this;
 
-	let submitForm0 = reviewCtrl.submitForm;
-	reviewCtrl.submitForm = function(){
-		bs.postPortal().always( ()=> {
-			submitForm0.apply( reviewCtrl, arguments);
-		} );
-	};
+	let func = XMLHttpRequest.prototype.open;
+	XMLHttpRequest.prototype.open = function( method, url ){
+		if( url=="/api/v1/vault/review" ){
+			if( method=="GET" ){
+				this.addEventListener( 'load', function(){
+					bs.loadNewPortal(
+						JSON.parse(this.responseText).result
+					);
+				} );
+			}else{ // POST
+				let xhr = this;
+				let send2 = this.send;
+				this.send = async function(d){
+					await bs.postPortal(d);
+					return send2.apply(this, arguments);
+				};
+			}
+		}
+		return  func.apply(this, arguments);
+	}
 };
 
-bs.init = async function(){
-	this.loadOverrides();
-	
-	this.iOS = this.isIOS();
+/**
+ * 為了 script 獨立執行時，沒有 @require 到 jQuery
+ */
+bs.jQueryReady = function(){
+	return new Promise( (resolve,reject)=>{
+		if(window.jQuery){
+			resolve();
+		}else{
+			var script = document.createElement("script");
+			script.src = "https://cdn.jsdelivr.net/gh/jquery/jquery@3.6.0/dist/jquery.min.js";
+			script.onload = resolve;
+			script.onerror = reject;
+			
+			document.head.appendChild(script);
+		}
+	});
+};
 
-	if( this.iOS ){
-		this.fix_iOS_hover();
-	}
+bs.documentReady = function(){
+	return new Promise( (resolve)=>{
+		$(document).ready( resolve );
+	});
+};
 
-	await this.waitForPageData();
-	this.Pane.init( this );
+bs.init = function(){
+	this.injectBsFunctions();
 
-	this.initPasscode();
+	return this.jQueryReady()
+		.then( this.documentReady	)
+		.then( this.loadOverrides.bind(this) )
+		.then( ()=>{
+			this.iOS = this.isIOS();
+			if( this.iOS ){
+				this.fix_iOS_hover();
+			}
+			
+			this.Pane.init( this );
+			this.PostingLoader.init();
+			this.initPasscode();
+		} );
+};
 
-	if( ! this.passcode ){
-		this.$otherReviews_firebase.html( "<br><br>必須輸入 passcode 才能運作。<br>請申請一個 passcode 並在上方設定<br>設定後須要重新載入頁面。" );
-		this.$div_notification_icons.hide();
-		this.$otherReviews_sheet.hide();
-		return;
-	}else{
-		this.injectBsFunctions();
-		this.PostingLoader.init();
-
+bs.loadNewPortal = function( pageData ){
+	// console.log(pageData);
+	if( this.passcode ){
+		this.pageData = pageData;
+		this.hashID = this.imgUrlToHashId( this.pageData.imageUrl );
+		this.Pane.showNewPortal();
 		if( this.isQueryFromSheet ){
 			this.queryReviewsFromSheet();
-		}else{
-			this.$otherReviews_sheet.hide();
 		}
 		if( this.isQueryFromFirebase ){
 			this.queryReviewsFromFirebase();
-		}else{
-			this.$otherReviews_firebase.hide();
 		}
 	}
 };
 
 bs.Pane = {
+	$el:null,
+	$div_notification_icons:null,
+	$otherReviews_firebase:null,
+	$otherReviews_sheet:null,
 	init( bs ){
 		this.bs = bs;
 
-		bs.$pane =  $(/*html*/`
-		<div id="brainStorming">
-			<div class="briefing">
-				<span class="versionNo">v${bs._VERSION}</span>
-				※使用本script時，評分意見會傳送到server公開 
-				※其他人的意見僅作參考，請為了良好的遊戲環境努力審核，獨立思考，集思廣益
+		this.$el =  $(/*html*/`
+			<div id="brainStorming">
+				<div class="briefing">
+					<span class="versionNo">v${bs._VERSION}</span>
+					※使用本script時，評分意見會傳送到server公開 
+					※其他人的意見僅作參考，請為了良好的遊戲環境努力審核，獨立思考，集思廣益
+				</div>
+				<div class="buttons">
+					<input class="T_hashtag" size="15" onClick="this.select();" readonly />
+					<a class="link" onclick="bs.editPasscode()">passcode</a>
+					<a class="link link_watermeter" target="_blank" href="https://brainstorming.azurewebsites.net/watermeter.html"><span class="short">查</span><span class="long">水表</span></a> 
+					<a class="link" target="_blank" href="https://brainstorming.azurewebsites.net/bs.html"><span class="short">牆</span><span class="long">wall</span></a> 
+					<a class="link" target="_blank" href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSrXYajaKHfO0aDANr-aFu61DEzB0wy5X87uQUBKFza__1J7ttnqJh_84Gvp9-tETIzjbiK_yPx7Llk/pubhtml?gid=621294114&single=true"><span class="short">統</span><span class="long">使用統計</span></a>
+				</div>
 			</div>
-			<div class="buttons">
-				<input class="T_hashtag" value="#${bs.hashID}" size="15" onClick="this.select();" readonly />
-				<a class="link" onclick="bs.editPasscodeInlocalStorage()">passcode</a>
-				<a class="link" target="_blank" href="https://brainstorming.azurewebsites.net/watermeter.html#${bs.hashID}"><span class="short">查</span><span class="long">水表</span></a> 
-				<a class="link" target="_blank" href="https://brainstorming.azurewebsites.net/bs.html"><span class="short">牆</span><span class="long">wall</span></a> 
-				<a class="link" target="_blank" href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSrXYajaKHfO0aDANr-aFu61DEzB0wy5X87uQUBKFza__1J7ttnqJh_84Gvp9-tETIzjbiK_yPx7Llk/pubhtml?gid=621294114&single=true"><span class="short">統</span><span class="long">使用統計</span></a>
-			</div>
-			<div class="otherReviews otherReviews_firebase"> ⌛ Loading...</div> 
-			<div class="otherReviews otherReviews_sheet"> ⌛ Loading...</div> 
-			<div class="div_notification_icons"><span class="loading">⌛</span></div> 
-		</div>
-		`);
-		bs.$div_notification_icons = $(".div_notification_icons", bs.$pane );
-		bs.$otherReviews_firebase = $(".otherReviews_firebase", bs.$pane);
-		bs.$otherReviews_sheet = $(".otherReviews_sheet", bs.$pane);
+		`)
 
-		$(document.body).append(this.css, bs.$pane );
+		this.$el.append(
+			bs.isQueryFromFirebase && (
+				this.$otherReviews_firebase =$(/*html*/
+				`<div class="otherReviews otherReviews_firebase"></div>`)
+			),
+			bs.isQueryFromSheet && (
+				this.$otherReviews_sheet = $(/*html*/
+				`<div class="otherReviews otherReviews_sheet"></div>`)
+			),
+			this.$div_notification_icons = $(/*html*/
+				`<div class="div_notification_icons"></div>`),
+		);
+			
+		$(document.body).append(this.css, this.$el );
+	},
+	showNewPortal(){
+		this.$el
+			.find(".T_hashtag").val(`#${bs.hashID}`).end()
+			.find(".link_watermeter").attr(
+				"href", `https://brainstorming.azurewebsites.net/watermeter.html#${bs.hashID}`
+			).end()
+			.find(".otherReviews").html(" ⌛ Loading...");
+		
+		this.$div_notification_icons.html(`<span class="loading">⌛</span>`);
 	},
 	css:/*html*/`
 		<style>
@@ -601,19 +638,24 @@ bs.Pane = {
 };
 
 bs.PostingLoader = {
+	$el:null,
+	showCount:0, // in case multiple postings happen simultaneously
 	init(){
-		$(document.body).append(this.css);
+		this.$el = $(this.html).hide();
+		$(document.body).append( this.css, this.$el );
 	},
 	show(){
-		$(document.body).append(this.html);
+		this.showCount++;
+		this.$el.toggle(this.showCount>0);
 	},
 	hide(){
-		$(".bsPostingLoader").remove();
+		this.showCount--;
+		this.$el.toggle(this.showCount>0);
 	},
 	html:/*html*/`
 		<div class="bsPostingLoader">
 			<img class="loader rotating" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAOUlEQVQYlWNgQAX/0TBW8P//QXYUjE0xhiJsijEkkGlkxThNo1BhuBKyIB53hiuhYrw+J0IRwQAHAArxntwkepFwAAAAAElFTkSuQmCC">
-			<div class"text">posting to Brainstorming...</div>
+			<div class="text">posting to Brainstorming...</div>
 		</div>
 	`,
 	css:/*html*/`
@@ -622,22 +664,20 @@ bs.PostingLoader = {
 				position: absolute;
 				z-index: 999;
 				top: 0;
-				bottom: 0;
+				height: 50px;
 				left: 0;
 				right: 0;
-				background: rgba(0,0,0,0.76);
 				display: flex;
 				justify-content: center;
 				align-items: center;
-				flex-direction: column;
+				flex-direction: row;
+				opacity: 0.9;
 			}
 			.bsPostingLoader .text{
-				color: white;
-				margin-top:1em;
+				margin-left: 1em;
 			}
 			.bsPostingLoader .loader{
-				width: 20vmin;
-				opacity: 0.5;
+				width: 50px;
 				image-rendering:-moz-crisp-edges;          /* Firefox        */
 				image-rendering:-o-crisp-edges;            /* Opera          */
 				image-rendering:crisp-edges;               /* CSS4 Proposed  */
@@ -658,12 +698,5 @@ bs.PostingLoader = {
 	`,
 };
 
-if(!window.jQuery){
-	var script = document.createElement("script");
-	script.src = "https://cdn.jsdelivr.net/gh/jquery/jquery@3.5.1/dist/jquery.min.js";
-	script.onload = ()=>bs.init();
-	
-	document.head.appendChild(script);
-}else{
-	bs.init();
-}
+bs.init()
+	.catch( console.error );

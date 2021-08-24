@@ -5,7 +5,7 @@
 // @require     https://cdn.jsdelivr.net/gh/jquery/jquery@3.6.0/dist/jquery.min.js
 // @updateURL    https://github.com/6582/1/raw/main/bs.meta.js
 // @downloadURL  https://github.com/6582/1/raw/main/bs.user.js
-// @version     5.2
+// @version     5.3
 // @run-at document-start
 // @grant       none
 // ==/UserScript==
@@ -72,7 +72,7 @@ v0.5 30/7/2017
 */
 
 window.bs = {
-	_VERSION: "5.2",
+	_VERSION: "5.3",
 	iOS: false,
 
 	isQueryFromFirebase: true,
@@ -445,16 +445,21 @@ bs.jQueryReady = function(){
 };
 
 bs.documentReady = function(){
-	return new Promise( (resolve)=>{
-		$(document).ready( resolve );
+	return new Promise( resolve=>{
+		let timer = setInterval( ()=>{
+			if( document.readyState=='complete' ){
+				clearInterval( timer );
+				resolve();
+			}
+		}, 99 );
 	});
 };
 
 bs.init = function(){
 	this.injectBsFunctions();
 
-	return this.jQueryReady()
-		.then( this.documentReady	)
+	return this.documentReady()
+		.then( this.jQueryReady.bind(this)	)
 		.then( this.loadOverrides.bind(this) )
 		.then( ()=>{
 			this.iOS = this.isIOS();

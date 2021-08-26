@@ -1,4 +1,4 @@
-# 書籤小程式 bookmarklet (iOS Safari 可使用)
+# 書籤小程式 bookmarklet (iOS Safari/Android Chrome等 可使用)
 執行內容是載入 https://cdn.jsdelivr.net/gh/6582/1/bs.user.js
 
 * bookmarklet只需載入一次，審每個po之間不需重新載入

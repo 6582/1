@@ -9,6 +9,10 @@ javascript:(function(F,i,r,e,k,u,I,E){if(F.getElementById(k))return;E=F[i+'NS']&
 `
 
 
-## 安裝方法可參考:
+### 安裝方法可參考:
 - https://sspai.com/post/26196
 - https://kknews.cc/tech/69p22kl.html
+
+
+### Android上如何用 userscript
+https://telegra.ph/Android上如何用-userscript-07-12

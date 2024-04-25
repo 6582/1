@@ -5,7 +5,7 @@
 // @require     https://cdn.jsdelivr.net/gh/jquery/jquery@3.6.0/dist/jquery.min.js
 // @updateURL    https://github.com/6582/1/raw/main/bs.meta.js
 // @downloadURL  https://github.com/6582/1/raw/main/bs.user.js
-// @version     5.3
+// @version     6.0
 // @run-at document-start
 // @grant       none
 // ==/UserScript==
@@ -15,6 +15,9 @@
 使用本script審po時，會把打分和comments自動傳送到server公開，其他使用者審到同樣的po時，會看得到別人打過的分數和comment。
 目的是互相提醒、交流和學習，同時獨立思考，讓po審核更加盡善盡美。
 你可以把需要注意的地方寫在 comment 中。
+
+v6 25/4/2024
+- 需要update post URL，舊版本不能再用。
 
 v5 23/8/2021
 - 因為網站又更新修正
@@ -311,7 +314,7 @@ bs.postPortal = function( d ){
 	// console.log( postData );
 
 	return $.post(
-		"https://script.google.com/macros/s/AKfycbx40e7IMYSRdBil1gDp2TrqE4loejar8oAnQaCXwn4SrG03ZPcz/exec",
+		"https://script.google.com/macros/s/AKfycbzNYqJOCJGvTo8rvAZM3YDM93POz-bmUN4i9BWA9yIjvtd4K_w5UeRQdZ78QKmtgKm5og/exec",
 		JSON.stringify( postData )
 	).done( result=>{
 		try{
@@ -414,6 +417,7 @@ bs.injectBsFunctions = function(){
 				this.send = async function(d){
 					try{
 						await bs.postPortal(d);
+						console.log( d );
 					}catch(error){
 						console.log(error);
 						alert( `上傳失敗 - ${error.message}\n${err.stack}` );

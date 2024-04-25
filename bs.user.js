@@ -5,7 +5,7 @@
 // @require     https://cdn.jsdelivr.net/gh/jquery/jquery@3/dist/jquery.min.js
 // @updateURL    https://github.com/6582/1/raw/main/bs.meta.js
 // @downloadURL  https://github.com/6582/1/raw/main/bs.user.js
-// @version     6.0.1
+// @version     6.1
 // @run-at document-start
 // @grant       none
 // ==/UserScript==
@@ -17,7 +17,8 @@
 你可以把需要注意的地方寫在 comment 中。
 
 v6 25/4/2024
-- 需要update post URL，舊版本不能再用。
+6.1 - 上傳意見等待最多2秒後在背景繼續處理
+6.0 - 需要update post URL，舊版本不能再用。
 
 v5 23/8/2021
 - 因為網站又更新修正
@@ -75,7 +76,7 @@ v0.5 30/7/2017
 */
 
 window.bs = {
-	_VERSION: "6.0.1",
+	_VERSION: "6.1",
 	iOS: false,
 
 	isQueryFromFirebase: true,
@@ -411,18 +412,25 @@ bs.injectBsFunctions = function(){
 						JSON.parse(this.responseText).result
 					);
 				} );
-			}else{ // POST
-				let xhr = this;
+			} else { // POST
 				let send2 = this.send;
-				this.send = async function(d){
-					try{
-						await bs.postPortal(d);
-						console.log( d );
-					}catch(error){
+				this.send = function (d) {
+					const postPortalPromise = bs.postPortal(d).catch(error => {
 						console.log(error);
-						alert( `上傳失敗 - ${error.message}\n${err.stack}` );
-					}
-					return send2.apply(this, arguments);
+						alert(`🤔bs 上傳失敗 - ${error.message}\n${error.stack}`);
+					});
+
+					const timeoutPromise = new Promise(resolve =>
+						setTimeout(resolve, 2000)
+					);
+
+					// Wait for either the postPortalPromise or the timeoutPromise to resolve
+					Promise.race([
+						postPortalPromise,
+						timeoutPromise
+					]).then(() => {
+						return send2.apply(this, arguments);
+					});
 				};
 			}
 		}

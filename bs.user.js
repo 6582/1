@@ -5,7 +5,7 @@
 // @require     https://cdn.jsdelivr.net/gh/jquery/jquery@3/dist/jquery.min.js
 // @updateURL    https://github.com/6582/1/raw/main/bs.meta.js
 // @downloadURL  https://github.com/6582/1/raw/main/bs.user.js
-// @version     6.1.1
+// @version     6.2
 // @run-at document-start
 // @grant       none
 // ==/UserScript==
@@ -15,6 +15,9 @@
 使用本script審po時，會把打分和comments自動傳送到server公開，其他使用者審到同樣的po時，會看得到別人打過的分數和comment。
 目的是互相提醒、交流和學習，同時獨立思考，讓po審核更加盡善盡美。
 你可以把需要注意的地方寫在 comment 中。
+
+v6.2 17/5/2024
+- 加入(以往存在的)評論文字輸入
 
 v6 25/4/2024
 6.1 - 上傳意見等待最多2秒後在背景繼續處理
@@ -76,7 +79,7 @@ v0.5 30/7/2017
 */
 
 window.bs = {
-	_VERSION: "6.1",
+	_VERSION: "6.2",
 	iOS: false,
 
 	isQueryFromFirebase: true,
@@ -307,7 +310,7 @@ bs.postPortal = function( d ){
 		passcode: this.passcode,
 		version: +this._VERSION,
 		iOS: this.iOS,
-		comment: $("mat-form-field textarea").val(),
+		comment: document.querySelector("#bsComment_5k8qr4 textarea")?.value ?? "",
 	};
 
 	this.PostingLoader.show();
@@ -479,6 +482,8 @@ bs.init = function(){
 			if( this.iOS ){
 				this.fix_iOS_hover();
 			}
+
+			this.initTimerForAddingBSCommentField();
 			
 			this.Pane.init( this );
 			this.PostingLoader.init();
@@ -509,6 +514,42 @@ bs.loadNewPortal = function( pageData ){
 		}
 	}
 };
+
+bs.initTimerForAddingBSCommentField = function(){
+	setInterval(()=>{
+		if( ! location.href.includes("new/review") ) return;
+		if( this.pageData?.type != "NEW" ) return;
+		if( document.getElementById("bsComment_5k8qr4") ) return;
+
+		document.querySelector("#categorization-card")?.
+			insertAdjacentHTML("afterbegin", /*html*/ `
+				<div id="bsComment_5k8qr4">
+					<textarea placeholder="在此輸入提交到 brainstorming 的評論... (只提交到bs)"></textarea>
+				</div>
+				<style>
+					#bsComment_5k8qr4{
+						width: 100%;
+		
+						display: flex;
+						flex-direction: column;
+						padding: 7px 10px;
+		
+						border: 1px solid #71ffff;
+						color: #71ffff;
+						background-color: #014949;
+					}
+					#bsComment_5k8qr4 textarea{
+						height: 4.3em;
+
+						border: 1px solid #716666;
+						color: #003838;
+						background-color: #e1f7f7;
+					}
+			</style>
+			`);
+
+	}, 777);
+}
 
 bs.Pane = {
 	$el:null,

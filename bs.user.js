@@ -384,9 +384,9 @@ bs.editPasscode = function(){
 		`[passcode]:
 
 可輸入
-var passcode="passcode_xxx";
+var passcode="name_xxx";
 或 
-passcode_xxx`,
+name_xxx`,
 		localStorage.BSpasscode || ""
 	);
 

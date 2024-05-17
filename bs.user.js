@@ -5,7 +5,7 @@
 // @require     https://cdn.jsdelivr.net/gh/jquery/jquery@3/dist/jquery.min.js
 // @updateURL    https://github.com/6582/1/raw/main/bs.meta.js
 // @downloadURL  https://github.com/6582/1/raw/main/bs.user.js
-// @version     6.1
+// @version     6.1.1
 // @run-at document-start
 // @grant       none
 // ==/UserScript==
@@ -351,7 +351,8 @@ bs.isIOS = function() {
     'iPod Simulator',
     'iPad',
     'iPhone',
-    'iPod'
+    'iPod',
+		'MacIntel', // for iPads running iOS 13 or later
   ].includes(navigator.platform)
   // iPad on iOS 13 detection
   || (navigator.userAgent.includes("Mac") && "ontouchend" in document)
